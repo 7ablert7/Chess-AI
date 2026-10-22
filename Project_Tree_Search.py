@@ -12,6 +12,14 @@ piece_values = {
     chess.KING: 0,
 }
 
+center_squares = {
+    chess.C3, chess.C4, chess.C5, chess.C6,
+    chess.D3, chess.D4, chess.D5, chess.D6,
+    chess.E3, chess.E4, chess.E5, chess.E6,
+    chess.F3, chess.F4, chess.F5, chess.F6
+}
+
+
 def evaluate(board):
     score = 0
 
@@ -22,6 +30,12 @@ def evaluate(board):
             score += value
         else:
             score -= value
+
+        if square in center_squares:
+            if piece.color == chess.WHITE:
+                score += 10
+            else:
+                score -= 10
 
     return score
 
@@ -55,19 +69,34 @@ def minimax (board, depth, maximizing_player):
         return best_score
 
 def choose_best_move(board, depth):
-    best_move = None
-    best_score = -999999
+    if board.turn == chess.WHITE:
+        best_move = None
+        best_score = -999999
 
-    for move in board.legal_moves:
-        board.push(move)
-        score = minimax(board, depth-1, False)
-        board.pop()
+        for move in board.legal_moves:
+            board.push(move)
+            score = minimax(board, depth-1, False)
+            board.pop()
 
-        if score > best_score:
-            best_score = score
-            best_move = move
+            if score > best_score:
+                best_score = score
+                best_move = move
 
-    return best_move
+        return best_move
+    else:
+        best_move = None
+        best_score = 999999
+
+        for move in board.legal_moves:
+            board.push(move)
+            score = minimax(board, depth-1, False)
+            board.pop()
+
+            if score < best_score:
+                best_score = score
+                best_move = move
+
+        return best_move
 
 while board.is_game_over() == False:
     print(board)
